@@ -10,7 +10,7 @@
 > 打开浏览器并输入网址：监听对象的IP地址 + 端口号<br>
 
 ### 个人设置
-> 打开 index.js 并找到
+> 打开 index.js 并找到代码
 ```JavaScript
 /*可修改的设置*/
 var Token = "abcd", //Token验证的字符串
