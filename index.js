@@ -43,6 +43,19 @@ function Client(socket) {
     this.timeout = setTimeout(this.timeoutProc, 15000);
 }
 
+
+function sysInfo() {
+    var freeMem = os.freemem();
+    var totalMem = os.totalmem();
+    osUtils.cpuUsage(function (value) {
+        io.sockets.emit("sysInfo", {
+            cpuUsage: value * 100.0,
+            freeMem: freeMem,
+            totalMem: totalMem
+        });
+    });
+}
+
 io.sockets.on('connection', function (sockets) {//连接事件
     console.log('已连接' + io.eio.clientsCount + '个用户！');
     var client = new Client(sockets);
@@ -63,24 +76,8 @@ io.sockets.on('connection', function (sockets) {//连接事件
         io.sockets.emit("TokenAccess", true);
     }
     io.sockets.emit("cpuInfo", cpuInfo);
+    sysInfo();
     if (interval < 0) {
-        interval = setInterval(function () {
-            var freeMem = os.freemem();
-            var totalMem = os.totalmem();
-            io.sockets.emit("cpuUpdate", {
-                cpuUsage: currCPU * 100.0,
-                freeMem: freeMem,
-                totalMem: totalMem
-            });
-        }, 1000);//每隔1s取系统数据
+        interval = setInterval(sysInfo, 1000);//每隔1s取系统数据
     }
 });
-
-function updateCPU() {
-    osUtils.cpuUsage(function (value) {
-        currCPU = value;
-        updateCPU();
-    });
-}
-
-updateCPU();
